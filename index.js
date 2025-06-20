@@ -39,15 +39,17 @@ const http = require("http");
 
 // console.log("All are async file read and write");
 
+const readItems = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+
 const server = http.createServer((req, res) => {
   const path = req.url;
 
   if (path === "/" || path === "/hello") {
     res.writeHead(200, { "content-type": "text/html" });
     res.end("<h1>Hello World</h2>");
-  } else if (path === "/end") {
-    res.writeHead(200, { "content-type": "text/html" });
-    res.end("<h1>End</h1>");
+  } else if (path === "/items") {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(readItems);
   } else {
     res.writeHead(404, {
       "content-type": "text/html",
