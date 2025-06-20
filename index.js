@@ -1,5 +1,6 @@
 const fs = require("fs");
 const http = require("http");
+const url = require("url");
 
 // const readFile = fs.readFileSync("./read-this.txt", "utf-8");
 
@@ -39,17 +40,24 @@ const http = require("http");
 
 // console.log("All are async file read and write");
 
-const readItems = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const readItems = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  const path = req.url;
+  const { query, pathname: path } = url.parse(req.url, true);
 
-  if (path === "/" || path === "/hello") {
-    res.writeHead(200, { "content-type": "text/html" });
-    res.end("<h1>Hello World</h2>");
+  if (path === "/items" && query.id !== undefined) {
+    res.writeHead(200, { "content-type": "application/json" });
+    const item = readItems[query.id];
+    if (item) {
+      res.end(JSON.stringify(item));
+    } else {
+      res.writeHead(404, { "content-type": "application/json" });
+      res.end(JSON.stringify({ error: "Item not found" }));
+    }
   } else if (path === "/items") {
     res.writeHead(200, { "content-type": "application/json" });
-    res.end(readItems);
+    res.end(JSON.stringify(readItems));
   } else {
     res.writeHead(404, {
       "content-type": "text/html",
