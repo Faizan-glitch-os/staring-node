@@ -40,7 +40,20 @@ const http = require("http");
 // console.log("All are async file read and write");
 
 const server = http.createServer((req, res) => {
-  res.end("Hello first request");
+  const path = req.url;
+
+  if (path === "/" || path === "/hello") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end("<h1>Hello World</h2>");
+  } else if (path === "/end") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end("<h1>End</h1>");
+  } else {
+    res.writeHead(404, {
+      "content-type": "text/html",
+    });
+    res.end("<h1>Page not found</h2>");
+  }
 });
 
 server.listen(3000, () => {
